@@ -38,8 +38,10 @@ import android.widget.TextView;
 public class GreenAdapter extends RecyclerView.Adapter<GreenAdapter.NumberViewHolder> {
 
     private static final String TAG = GreenAdapter.class.getSimpleName();
+    private static Object mutex = new Object();
 
-    // TODO (3) Create a final private ListItemClickListener called mOnClickListener
+    // done (3) Create a final private ListItemClickListener called mOnClickListener
+    private final ListItemClickListener mOnClickListener;
 
     /*
      * The number of ViewHolders that have been created. Typically, you can figure out how many
@@ -87,18 +89,23 @@ public class GreenAdapter extends RecyclerView.Adapter<GreenAdapter.NumberViewHo
 
     private int mNumberItems;
 
-    // TODO (1) Add an interface called ListItemClickListener
-    // TODO (2) Within that interface, define a void method called onListItemClick that takes an int as a parameter
+    // done (1) Add an interface called ListItemClickListener
+    interface  ListItemClickListener {
+        void onListItemClick(int itemId);
+    }
+    // done (2) Within that interface, define a void method called onListItemClick that takes an int as a parameter
 
-    // TODO (4) Add a ListItemClickListener as a parameter to the constructor and store it in mOnClickListener
+    // done (4) Add a ListItemClickListener as a parameter to the constructor and store it in mOnClickListener
     /**
      * Constructor for GreenAdapter that accepts a number of items to display and the specification
      * for the ListItemClickListener.
      *
      * @param numberOfItems Number of items to display in list
      */
-    public GreenAdapter(int numberOfItems) {
+    public GreenAdapter(int numberOfItems, ListItemClickListener clickListener) {
+
         mNumberItems = numberOfItems;
+        mOnClickListener = clickListener;
         viewHolderCount = 0;
     }
 
@@ -130,7 +137,9 @@ public class GreenAdapter extends RecyclerView.Adapter<GreenAdapter.NumberViewHo
                 .getViewHolderBackgroundColorFromInstance(context, viewHolderCount);
         viewHolder.itemView.setBackgroundColor(backgroundColorForViewHolder);
 
-        viewHolderCount++;
+        synchronized (GreenAdapter.mutex) {
+            viewHolderCount++;
+        }
         Log.d(TAG, "onCreateViewHolder: number of ViewHolders created: "
                 + viewHolderCount);
         return viewHolder;
@@ -163,11 +172,11 @@ public class GreenAdapter extends RecyclerView.Adapter<GreenAdapter.NumberViewHo
         return mNumberItems;
     }
 
-    // TODO (5) Implement OnClickListener in the NumberViewHolder class
+    // done (5) Implement OnClickListener in the NumberViewHolder class
     /**
      * Cache of the children views for a list item.
      */
-    class NumberViewHolder extends RecyclerView.ViewHolder {
+    class NumberViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         // Will display the position in the list, ie 0 through getItemCount() - 1
         TextView listItemNumberView;
@@ -186,7 +195,8 @@ public class GreenAdapter extends RecyclerView.Adapter<GreenAdapter.NumberViewHo
 
             listItemNumberView = (TextView) itemView.findViewById(R.id.tv_item_number);
             viewHolderIndex = (TextView) itemView.findViewById(R.id.tv_view_holder_instance);
-            // TODO (7) Call setOnClickListener on the View passed into the constructor (use 'this' as the OnClickListener)
+            itemView.setOnClickListener(this);
+            // done (7) Call setOnClickListener on the View passed into the constructor (use 'this' as the OnClickListener)
         }
 
         /**
@@ -198,6 +208,13 @@ public class GreenAdapter extends RecyclerView.Adapter<GreenAdapter.NumberViewHo
             listItemNumberView.setText(String.valueOf(listIndex));
         }
 
-        // TODO (6) Override onClick, passing the clicked item's position (getAdapterPosition()) to mOnClickListener via its onListItemClick method
+
+
+        @Override
+        public void onClick(View v) {
+            mOnClickListener.onListItemClick(getAdapterPosition());
+        }
+
+        // done (6) Override onClick, passing the clicked item's position (getAdapterPosition()) to mOnClickListener via its onListItemClick method
     }
 }
