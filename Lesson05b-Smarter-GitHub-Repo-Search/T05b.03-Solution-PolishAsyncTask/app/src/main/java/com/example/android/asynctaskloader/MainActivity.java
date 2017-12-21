@@ -21,6 +21,7 @@ import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -73,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements
 
             mUrlDisplayTextView.setText(queryUrl);
         }
-
+        LoaderManager.enableDebugLogging(true);
         /*
          * Initialize the loader
          */
@@ -190,8 +191,10 @@ public class MainActivity extends AppCompatActivity implements
                  */
                 if (mGithubJson != null) {
                     deliverResult(mGithubJson);
+                    Log.d("BRAT", "Using Cached data!");
                 } else {
                     forceLoad();
+                    Log.d("BRAT", "Loading a new one!");
                 }
             }
 
@@ -274,5 +277,12 @@ public class MainActivity extends AppCompatActivity implements
 
         String queryUrl = mUrlDisplayTextView.getText().toString();
         outState.putString(SEARCH_QUERY_URL_EXTRA, queryUrl);
+    }
+
+    @Override
+    protected void onStart() {
+        Log.d("BRAT", "onStart() before super");
+        super.onStart();
+        Log.d("BRAT", "onStart() after super");
     }
 }

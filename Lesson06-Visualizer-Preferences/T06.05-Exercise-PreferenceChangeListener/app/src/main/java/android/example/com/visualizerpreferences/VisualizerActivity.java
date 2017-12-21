@@ -28,13 +28,16 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-// TODO (1) Implement OnSharedPreferenceChangeListener
-public class VisualizerActivity extends AppCompatActivity {
+// DONE (1) Implement OnSharedPreferenceChangeListener
+public class VisualizerActivity extends AppCompatActivity implements
+        SharedPreferences.OnSharedPreferenceChangeListener
+{
 
     private static final int MY_PERMISSION_RECORD_AUDIO_REQUEST_CODE = 88;
     private VisualizerView mVisualizerView;
@@ -54,15 +57,26 @@ public class VisualizerActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         mVisualizerView.setShowBass(sharedPreferences.getBoolean(getString(R.string.pref_show_bass_key),
                 getResources().getBoolean(R.bool.pref_show_bass_default)));
-        mVisualizerView.setShowMid(true);
-        mVisualizerView.setShowTreble(true);
+
+        mVisualizerView.setShowMid(sharedPreferences.getBoolean(getString(R.string.pref_show_mid_key),
+                getResources().getBoolean(R.bool.pref_show_mid_default)));
+        mVisualizerView.setShowTreble(sharedPreferences.getBoolean(getString(R.string.pref_show_high_key),
+                getResources().getBoolean(R.bool.pref_show_high_default)));
+
         mVisualizerView.setMinSizeScale(1);
         mVisualizerView.setColor(getString(R.string.pref_color_red_value));
-        // TODO (3) Register the listener
+        sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+        // DONE (3) Register the listener
     }
 
-    // TODO (2) Override the onSharedPreferenceChanged method and update the show bass preference
-    // TODO (4) Override onDestroy and unregister the listener
+    // DONE (2) Override the onSharedPreferenceChanged method and update the show bass preference
+    // DONE (4) Override onDestroy and unregister the listener
+
+    @Override
+    protected void onDestroy() {
+        PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
+        super.onDestroy();
+    }
 
     /**
      * Methods for setting up the menu
@@ -151,5 +165,19 @@ public class VisualizerActivity extends AppCompatActivity {
             // Other permissions could go down here
 
         }
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
+
+        mVisualizerView.setShowBass(sharedPreferences.getBoolean(getString(R.string.pref_show_bass_key),
+                getResources().getBoolean(R.bool.pref_show_bass_default)));
+        mVisualizerView.setShowMid(sharedPreferences.getBoolean(getString(R.string.pref_show_mid_key),
+                getResources().getBoolean(R.bool.pref_show_mid_default)));
+        mVisualizerView.setShowTreble(sharedPreferences.getBoolean(getString(R.string.pref_show_high_key),
+                getResources().getBoolean(R.bool.pref_show_high_default)));
+
+        Log.d("BRAT", "onSharedPreferenceChanged() : "+s);
+
     }
 }
