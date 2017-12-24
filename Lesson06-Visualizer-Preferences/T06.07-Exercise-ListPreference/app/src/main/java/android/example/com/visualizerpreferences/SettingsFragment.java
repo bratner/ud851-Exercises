@@ -18,23 +18,55 @@ package android.example.com.visualizerpreferences;
 
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v7.preference.CheckBoxPreference;
 import android.support.v7.preference.EditTextPreference;
 import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
+import android.support.v7.preference.PreferenceManager;
 import android.support.v7.preference.PreferenceScreen;
+import android.util.Log;
 import android.widget.Toast;
 
 
-public class SettingsFragment extends PreferenceFragmentCompat {
+public class SettingsFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
 
         // Add visualizer preferences, defined in the XML file in res->xml->pref_visualizer
         addPreferencesFromResource(R.xml.pref_visualizer);
+//        String pref_color_key = getResources().getString(R.string.pref_color_key);
+//        String currentColor = getPreferenceManager().getSharedPreferences()
+//                .getString(pref_color_key,"Red");
+//        Preference listPreference = findPreference(pref_color_key);
+//        listPreference.setSummary(currentColor);
+       // getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+    }
+    @Override
+    public boolean onPreferenceTreeClick(Preference preference) {
+        Log.d("BRAT", "Clicked on "+preference.getKey());
+        return super.onPreferenceTreeClick(preference);
     }
 
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
+        String pref_color_key = getResources().getString(R.string.pref_color_key);
+        ListPreference listPreference = (ListPreference) findPreference(pref_color_key);
+        listPreference.setSummary(listPreference.getValue());
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        Log.d("BRAT", "Prefs onDestroy()");
+        super.onDestroy();
+       // getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+    }
 }

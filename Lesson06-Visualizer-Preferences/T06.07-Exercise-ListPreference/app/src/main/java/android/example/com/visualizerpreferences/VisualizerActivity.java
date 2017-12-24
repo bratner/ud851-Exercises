@@ -28,6 +28,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -48,7 +49,7 @@ public class VisualizerActivity extends AppCompatActivity implements SharedPrefe
         setupPermissions();
     }
 
-    // TODO (4) Update setupSharedPreferences and onSharedPreferenceChanged to load the color
+    // done (4) Update setupSharedPreferences and onSharedPreferenceChanged to load the color
     // from shared preferences. Call setColor, passing in the color you got
     private void setupSharedPreferences() {
         // Get all of the values from shared preferences to set it up
@@ -60,19 +61,28 @@ public class VisualizerActivity extends AppCompatActivity implements SharedPrefe
         mVisualizerView.setShowTreble(sharedPreferences.getBoolean(getString(R.string.pref_show_treble_key),
                 getResources().getBoolean(R.bool.pref_show_treble_default)));
         mVisualizerView.setMinSizeScale(1);
-        mVisualizerView.setColor(getString(R.string.pref_color_red_value));
+        mVisualizerView.setColor(getColorFromPreferences(sharedPreferences));
         // Register the listener
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
     }
 
+    String getColorFromPreferences(SharedPreferences prefs)
+    {
+        return prefs.getString(getResources().getString(R.string.pref_color_key),
+                getResources().getString(R.string.pref_color_red_value));
+    }
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        Log.d("BRAT", "Change on key: " + key);
         if (key.equals(getString(R.string.pref_show_bass_key))) {
             mVisualizerView.setShowBass(sharedPreferences.getBoolean(key, getResources().getBoolean(R.bool.pref_show_bass_default)));
         } else if (key.equals(getString(R.string.pref_show_mid_range_key))) {
             mVisualizerView.setShowMid(sharedPreferences.getBoolean(key, getResources().getBoolean(R.bool.pref_show_mid_range_default)));
         } else if (key.equals(getString(R.string.pref_show_treble_key))) {
             mVisualizerView.setShowTreble(sharedPreferences.getBoolean(key, getResources().getBoolean(R.bool.pref_show_treble_default)));
+        } else if (key.equals(getString(R.string.pref_color_key))) {
+            Log.d("BRAT", "Changing color event");
+            mVisualizerView.setColor(getColorFromPreferences(sharedPreferences));
         }
     }
 
@@ -119,14 +129,28 @@ public class VisualizerActivity extends AppCompatActivity implements SharedPrefe
     @Override
     protected void onPause() {
         super.onPause();
+        Log.d("BRAT","ON PAUSE");
         if (mAudioInputReader != null) {
             mAudioInputReader.shutdown(isFinishing());
         }
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d("BRAT", "OnSTOP");
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Log.d("BRAT", "ON SAVEINSTANCE");
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
+        Log.d("BRAT","ON RESUME");
         if (mAudioInputReader != null) {
             mAudioInputReader.restart();
         }
@@ -172,4 +196,5 @@ public class VisualizerActivity extends AppCompatActivity implements SharedPrefe
 
         }
     }
+
 }

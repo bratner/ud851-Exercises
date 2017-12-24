@@ -25,6 +25,7 @@ import android.os.SystemClock;
 import android.support.annotation.ColorInt;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 
@@ -269,6 +270,7 @@ public class VisualizerView extends View {
      */
     public void setColor(String newColorKey) {
 
+        Log.d("BRAT", "Setting color to "+newColorKey);
         @ColorInt
         int shapeColor;
 
