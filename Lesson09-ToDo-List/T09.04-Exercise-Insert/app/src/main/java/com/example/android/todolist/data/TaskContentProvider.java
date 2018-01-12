@@ -17,12 +17,16 @@
 package com.example.android.todolist.data;
 
 import android.content.ContentProvider;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 // Verify that TaskContentProvider extends from ContentProvider and implements required methods
 public class TaskContentProvider extends ContentProvider {
@@ -78,16 +82,39 @@ public class TaskContentProvider extends ContentProvider {
 
     @Override
     public Uri insert(@NonNull Uri uri, ContentValues values) {
-        // TODO (1) Get access to the task database (to write new data to)
+        // DONE (1) Get access to the task database (to write new data to)
+        final SQLiteDatabase db = mTaskDbHelper.getWritableDatabase();
 
-        // TODO (2) Write URI matching code to identify the match for the tasks directory
+        // DONE (2) Write URI matching code to identify the match for the tasks directory
+        int request_id = sUriMatcher.match(uri);
 
-        // TODO (3) Insert new values into the database
-        // TODO (4) Set the value for the returnedUri and write the default case for unknown URI's
+        Uri returnUri = null;
+        switch (request_id) {
+            case TASKS:
+                    Log.d("BRAT", "Got INSERT TASKS URI request");
+                    /* value validation anyone? */
+                    long ret_id = db.insert(TaskContract.TaskEntry.TABLE_NAME,null, values);
+                    if (ret_id > 0)
+                    {
+                        returnUri = ContentUris.withAppendedId(uri,ret_id);
+                    }
+                    else {
+                        throw new SQLException("Failed to insert row into "+uri);
+                    }
+                    break;
+            case TASK_WITH_ID:
+                    Log.d("BRAT", "Got INSERT SINGLE TASK URI request, This is an error.");
+                    break;
+            default:
+                    throw new UnsupportedOperationException("Unknown uri: "+uri);
 
-        // TODO (5) Notify the resolver if the uri has been changed, and return the newly inserted URI
+        }
+        // DONE (3) Insert new values into the database
+        // DONE(4) Set the value for the returnedUri and write the default case for unknown URI's
 
-        throw new UnsupportedOperationException("Not yet implemented");
+        // done (5) Notify the resolver if the uri has been changed, and return the newly inserted URI
+        getContext().getContentResolver().notifyChange(uri, null);
+        return returnUri;
     }
 
 

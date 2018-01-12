@@ -16,10 +16,16 @@
 
 package com.udacity.example.quizexample;
 
+import android.content.ContentResolver;
+import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+
+import com.udacity.example.droidtermsprovider.DroidTermsExampleContract;
 
 /**
  * Gets the data from the ContentProvider and shows a series of flash cards.
@@ -30,7 +36,8 @@ public class MainActivity extends AppCompatActivity {
     // The current state of the app
     private int mCurrentState;
 
-    // TODO (3) Create an instance variable storing a Cursor called mData
+    // done (3) Create an instance variable storing a Cursor called mData
+    private Cursor mData;
     private Button mButton;
 
     // This state is when the word definition is hidden and clicking the button will therefore
@@ -50,7 +57,8 @@ public class MainActivity extends AppCompatActivity {
         // Get the views
         mButton = (Button) findViewById(R.id.button_next);
 
-        // TODO (5) Create and execute your AsyncTask here
+        QueryTask qt = new QueryTask();
+        qt.execute();
     }
 
     /**
@@ -89,10 +97,44 @@ public class MainActivity extends AppCompatActivity {
         mCurrentState = STATE_SHOWN;
 
     }
+    private class QueryTask extends AsyncTask<Void, Void, Cursor> {
 
-    // TODO (1) Create AsyncTask with the following generic types <Void, Void, Cursor>
-    // TODO (2) In the doInBackground method, write the code to access the DroidTermsExample
+        @Override
+        protected Cursor doInBackground(Void... voids) {
+
+            ContentResolver resolver = getContentResolver();
+            Cursor ret = resolver.query(DroidTermsExampleContract.CONTENT_URI,null,null,null,null);
+
+            return ret;
+        }
+
+        @Override
+        protected void onPostExecute(Cursor result) {
+            mData = result;
+
+            int wordCol = result.getColumnIndex(DroidTermsExampleContract.COLUMN_WORD);
+            result.getColumnIndex(DroidTermsExampleContract.COLUMN_DEFINITION);
+            while (result.moveToNext()) {
+                String word = result.getString(wordCol);
+                Log.d("CursorExample", word);
+            }
+            result.moveToFirst();
+            Log.d("BRAT", "Got result with "+String.valueOf(result.getCount())+" rows"+
+                    " Curent row " + String.valueOf(result.getPosition()));
+            for (int i = 0; i < result.getCount(); i++)
+            {
+                int wordIndex = result.getColumnIndex(DroidTermsExampleContract.COLUMN_WORD);
+                String word = result.getString(wordIndex);
+
+                Log.d("BRAT", "Got word: "+word);
+                result.moveToNext();
+            }
+            result.moveToFirst();
+
+        }
+    }
+    // done (1) Create AsyncTask with the following generic types <Void, Void, Cursor>
+    // done (2) In the doInBackground method, write the code to access the DroidTermsExample
     // provider and return the Cursor object
-    // TODO (4) In the onPostExecute method, store the Cursor object in mData
-
+    // done (4) In the onPostExecute method, store the Cursor object in mData
 }
