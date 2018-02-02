@@ -42,10 +42,12 @@
             android:id="@+id/textViewPassengerName"
             android:textAppearance="@style/TextAppearance.AppCompat.Display1"
             android:textColor="@color/colorPrimary"
-            app:layout_constraintTop_toBottomOf="@+id/textViewPassengerLabel"
+            android:textSize="25sp"
+            app:layout_constraintTop_toTopOf="parent"
             android:layout_marginStart="16dp"
-            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintLeft_toRightOf="@id/textViewPassengerLabel"
             android:layout_marginLeft="16dp"
+            android:layout_marginTop="8dp"
             tools:layout_constraintTop_creator="1" />
 
 <!--
@@ -56,7 +58,8 @@
             android:id="@+id/flight_info"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-
+            app:layout_constraintRight_toLeftOf="@id/textViewDepartureTimeLabel"
+            app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textViewPassengerName"
             />
         <TextView
@@ -68,7 +71,7 @@
             android:letterSpacing="0.3"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/flight_info"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
             android:layout_marginStart="16dp"
             android:layout_marginLeft="16dp" />
 
@@ -95,9 +98,9 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Caption"
             android:letterSpacing="0.3"
             android:layout_marginEnd="40dp"
-            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintRight_toRightOf="@id/flight_info"
             app:layout_constraintTop_toBottomOf="@+id/flight_info"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
             android:layout_marginRight="40dp" />
 
 
@@ -119,9 +122,10 @@
             android:layout_height="wrap_content"
             android:textAppearance="@style/TextAppearance.AppCompat.Caption"
             android:letterSpacing="0.3"
-            android:layout_marginTop="8dp"
-            app:layout_constraintTop_toBottomOf="@+id/textViewBoardingTime"
-            app:layout_constraintLeft_toLeftOf="@+id/textViewBoardingTime"
+            android:layout_marginTop="16dp"
+            android:layout_marginRight="48dp"
+            app:layout_constraintTop_toTopOf="@+id/flight_info"
+            app:layout_constraintRight_toRightOf="parent"
             />
 
 
@@ -144,8 +148,8 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Caption"
             android:letterSpacing="0.3"
             android:layout_marginTop="8dp"
-            app:layout_constraintTop_toBottomOf="@+id/textViewBoardingInCountdown"
-            app:layout_constraintLeft_toLeftOf="@+id/textViewBoardingInCountdown"
+            app:layout_constraintTop_toBottomOf="@+id/textViewDepartureTime"
+            app:layout_constraintLeft_toLeftOf="@+id/textViewDepartureTimeLabel"
 
             />
 
@@ -168,10 +172,12 @@
 -->
         <include layout="@layout/boarding_info"
             android:id="@+id/boarding_info"
-            android:layout_width="match_parent"
+            android:layout_width="400dp"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/textViewArrivalTime"
-            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@+id/textViewBoardingTime"
+            app:layout_constraintRight_toRightOf="@id/flight_info"
+            app:layout_constraintLeft_toLeftOf="@id/flight_info"
+
             />
 
         <ImageView
@@ -180,9 +186,9 @@
             app:srcCompat="@mipmap/barcode"
             android:id="@+id/barcode"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/boarding_info"
-            android:layout_marginTop="16dp"
+            app:layout_constraintLeft_toLeftOf="@id/textViewDepartureTimeLabel"
+            app:layout_constraintTop_toTopOf="@id/boarding_info"
+
             />
 
     </android.support.constraint.ConstraintLayout>

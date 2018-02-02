@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">BoardingPass</string>
     <string name="passenger_label">PASSENGER</string>
-    <string name="passenger_name">MR. JAMES BOND</string>
+    <string name="passenger_name">MR. RANDOM PERSON</string>
     <string name="origin_code">SFO</string>
     <string name="destination_code">LAX</string>
     <string name="flight_code">UDA 2465</string>
