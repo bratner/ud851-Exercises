@@ -17,6 +17,7 @@
 package com.example.android.todolist;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -24,7 +25,13 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.View;
+
+import com.example.android.todolist.database.AppDatabase;
+import com.example.android.todolist.database.TaskEntry;
+
+import java.util.List;
 
 import static android.support.v7.widget.DividerItemDecoration.VERTICAL;
 
@@ -36,8 +43,9 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
     // Member variables for the adapter and RecyclerView
     private RecyclerView mRecyclerView;
     private TaskAdapter mAdapter;
+    private AppDatabase mDB;
 
-    // TODO (1) Create AppDatabase member variable for the Database
+    // DONE (1) Create AppDatabase member variable for the Database
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,7 +100,8 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
             }
         });
 
-        // TODO (2) Initialize member variable for the data base
+        // DONE (2) Initialize member variable for the data base
+        mDB = AppDatabase.getInstance(this);
     }
 
     /**
@@ -103,12 +112,27 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
     @Override
     protected void onResume() {
         super.onResume();
-        // TODO (3) Call the adapter's setTasks method using the result
+        // DONE (3) Call the adapter's setTasks method using the result
         // of the loadAllTasks method from the taskDao
+        new GetAllTasks().execute();
     }
 
     @Override
     public void onItemClickListener(int itemId) {
         // Launch AddTaskActivity adding the itemId as an extra in the intent
+    }
+
+    class GetAllTasks extends AsyncTask<Void, Void, List<TaskEntry>> {
+
+        @Override
+        protected List<TaskEntry> doInBackground(Void... voids) {
+            return mDB.taskDao().loadAllTasks();
+        }
+
+        @Override
+        protected void onPostExecute(List<TaskEntry> taskEntries) {
+            super.onPostExecute(taskEntries);
+            mAdapter.setTasks(taskEntries);
+        }
     }
 }

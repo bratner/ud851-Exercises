@@ -17,8 +17,10 @@
 package com.example.android.todolist;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -116,8 +118,8 @@ public class AddTaskActivity extends AppCompatActivity {
         Date date = new Date();
 
         TaskEntry taskEntry = new TaskEntry(description, priority, date);
-        mDb.taskDao().insertTask(taskEntry);
-        finish();
+
+        new InsertTask().execute(taskEntry);
     }
 
     /**
@@ -154,6 +156,23 @@ public class AddTaskActivity extends AppCompatActivity {
                 break;
             case PRIORITY_LOW:
                 ((RadioGroup) findViewById(R.id.radioGroup)).check(R.id.radButton3);
+        }
+    }
+
+    class InsertTask extends AsyncTask<TaskEntry, Void, Void> {
+        public String TAG = InsertTask.class.getSimpleName();
+        @Override
+        protected Void doInBackground(TaskEntry... taskEntries) {
+            Log.d(TAG, "Adding a new task with priority "+taskEntries[0].getPriority());
+            mDb.taskDao().insertTask(taskEntries[0]);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            Log.d(TAG, "Done adding a new task.");
+            AddTaskActivity.this.finish();
         }
     }
 }
